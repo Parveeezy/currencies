@@ -6,19 +6,22 @@ interface TimerType {
 
 const Timer = (props: TimerType) => {
 
-    const minutes: string = '00'
-    const [seconds, setSeconds] = useState<number>(60)
+    const minutes: string = '00';
+    const [seconds, setSeconds] = useState<number>(60);
 
-
-    useEffect(() => {
+    const updateTimer = () => {
         setTimeout(() => {
             setSeconds(seconds - 1)
             if (seconds === 0) {
                 props.getCurrency()
                 setSeconds(60)
             }
-        }, 1000)
-    }, [seconds])
+        }, 1000);
+    }
+
+    useEffect(() => {
+        updateTimer()
+    }, [seconds]);
 
 
     return (

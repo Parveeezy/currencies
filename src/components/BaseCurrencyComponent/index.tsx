@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Autocomplete, TextField} from "@mui/material";
-import {CurrenciesInputContainer} from "./components";
+import {CurrenciesInputContainer, ExchangeButtonPage} from "./components";
 import {Currencies} from "../../api";
 import {useBaseCurrency} from "../../providers/CurrenciesProvider";
 
@@ -16,6 +16,7 @@ const BaseCurrencyComponent = () => {
     return (
         <CurrenciesInputContainer>
             <Autocomplete
+                sx={{ width: '85%' }}
                 disablePortal
                 id="combo-box-demo"
                 options={currenciesList}
@@ -25,6 +26,7 @@ const BaseCurrencyComponent = () => {
                 onChange={handleChangeSelect}
                 renderInput={(params) => <TextField {...params} label="Base currency" />}
             />
+        <ExchangeButtonPage variant="contained">Exchange</ExchangeButtonPage>
         </CurrenciesInputContainer>
     );
 };

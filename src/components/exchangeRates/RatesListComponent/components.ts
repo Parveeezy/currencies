@@ -6,6 +6,7 @@ export const ExchangeListContainer = styled(Container)(() => ({
     border: '1px solid #bebebe',
     borderRadius: 4,
     padding: '10px 40px 10px 40px',
+    boxShadow: '1px 1px 15px gray',
 
     '&.MuiContainer-root': {
         maxWidth: 650,
@@ -38,7 +39,6 @@ export const ExchangeListItemValue = styled('li')(() => ({
     fontWeight: 500,
 }))
 
-
 export const ExchangeValueAndButtonBlock = styled('div')(() => ({
     display: 'flex',
     justifyContent: 'space-between',
@@ -46,7 +46,7 @@ export const ExchangeValueAndButtonBlock = styled('div')(() => ({
 }))
 
 export const ExchangeValue = styled('h2')(() => ({
-
+    color: '#909090'
 }))
 
 export const ExchangeUpdateButton = styled(Button)(() => ({
