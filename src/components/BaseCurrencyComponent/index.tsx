@@ -26,7 +26,9 @@ const BaseCurrencyComponent = () => {
                 onChange={handleChangeSelect}
                 renderInput={(params) => <TextField {...params} label="Base currency" />}
             />
-        <ExchangeButtonPage variant="contained">Exchange</ExchangeButtonPage>
+        <ExchangeButtonPage variant="contained">
+            Exchange
+        </ExchangeButtonPage>
         </CurrenciesInputContainer>
     );
 };
