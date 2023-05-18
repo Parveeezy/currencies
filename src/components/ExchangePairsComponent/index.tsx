@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import {
     ExchangePairsBlock,
     ExchangePairsContainer,
@@ -12,7 +12,6 @@ import {
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import { MenuItem } from '@mui/material';
 import { useBaseCurrency } from '../../providers/CurrenciesProvider';
-import { getCurrencyRates } from '../../api';
 
 
 const ExchangePairsComponent = () => {
@@ -21,36 +20,28 @@ const ExchangePairsComponent = () => {
 
     const { currenciesList, baseCurrency } = useBaseCurrency();
 
-    const [rates, setRates] = useState({});
-
-
-    // const [currencyValueFrom, setCurrencyValueFrom] = useState(0);
-    // const [currencyValueTo, setCurrencyValueTo] = useState(0);
+    const [currencyValueFrom, setCurrencyValueFrom] = useState(0);
+    const [currencyValueTo, setCurrencyValueTo] = useState(0);
 
     const [currencyItemFrom, setCurrencyItemFrom] = useState('USD');
     const [currencyItemTo, setCurrencyItemTo] = useState('RUB');
 
 
-    const getCurrencyRatesFromApi = async () => {
-        const result = await getCurrencyRates(baseCurrency);
-        setRates(result);
+    const changeValueFrom = (event: ChangeEvent<HTMLInputElement>) => {
+        setCurrencyValueFrom(Number(event.target.value) * currencyValueTo)
     };
 
-    // const changeInputVal = (val1: ChangeEvent<HTMLInputElement>) => {
-    //     setValue1(Number(val1.target.value))
-    // }
-
-    const changeCurrencyItemFrom = (val: any) => {
-        setCurrencyItemFrom(val.target.outerText)
+    const changeValueTo = (event: ChangeEvent<HTMLInputElement>) => {
+        setCurrencyValueTo(Number(event.target.value))
     };
 
-    // const changeCurrencyItemTo = (val: any) => {
-    //     setCurrencyItemTo(val.target.outerText)
-    // };
+    const changeCurrencyItemFrom = (event: any) => {
+        setCurrencyItemFrom(event.target.outerText)
+    };
 
-    const changeCurrencyItemTo = useCallback((val: any) => {
-        setCurrencyItemTo(val.target.outerText)
-    }, [currencyItemTo])
+    const changeCurrencyItemTo = (event: any) => {
+        setCurrencyItemTo(event.target.outerText)
+    };
 
     const handleChangeCurrencies = () => {
         if(currencyItemFrom !== currencyItemTo) {
@@ -58,6 +49,10 @@ const ExchangePairsComponent = () => {
             setCurrencyItemTo(currencyItemFrom)
         }
     };
+
+    useEffect(() => {
+        setCurrencyValueFrom()
+    }, [changeValueFrom, changeValueTo]);
 
     return (
         <ExchangePairsContainer>
@@ -68,7 +63,7 @@ const ExchangePairsComponent = () => {
 
                 <ExchangePairsInputsBlock>
                     <ExchangePairsFromTo>
-                        {/*<ExchangePairsInput value={currencyValueFrom} onChange={changeInputVal} />*/}
+                        <ExchangePairsInput value={currencyValueFrom} onChange={changeValueFrom} />
 
                         <ExchangePairsSelect value={currencyItemFrom} onClick={changeCurrencyItemFrom}>
 
@@ -90,7 +85,7 @@ const ExchangePairsComponent = () => {
                     </ExchangePairsSwiperButton>
 
                     <ExchangePairsFromTo>
-                        {/*<ExchangePairsInput value={currencyValueTo} />*/}
+                        <ExchangePairsInput value={currencyValueTo} onChange={changeValueTo}/>
 
                         <ExchangePairsSelect value={currencyItemTo} onClick={changeCurrencyItemTo}>
 
