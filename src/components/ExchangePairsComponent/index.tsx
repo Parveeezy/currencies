@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import {
     ExchangePairsBlock,
     ExchangePairsContainer,
@@ -7,25 +7,57 @@ import {
     ExchangePairsInputsBlock,
     ExchangePairsSelect,
     ExchangePairsSwiperButton,
-    ExchangePairsTitle
-} from "./components";
+    ExchangePairsTitle,
+} from './components';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
-import {useBaseCurrency} from "../../providers/CurrenciesProvider";
-import {MenuItem} from "@mui/material";
+import { MenuItem } from '@mui/material';
+import { useBaseCurrency } from '../../providers/CurrenciesProvider';
+import { getCurrencyRates } from '../../api';
 
 
 const ExchangePairsComponent = () => {
 
     let date = new Date();
 
-    const {currenciesList} = useBaseCurrency();
+    const { currenciesList, baseCurrency } = useBaseCurrency();
 
-    const [value1, setValue1] = useState(0)
-    const [value2, setValue2] = useState(0)
+    const [rates, setRates] = useState({});
 
-    const changeInputVal = (val1: ChangeEvent<HTMLInputElement>) => {
-        setValue1(Number(val1.target.value))
-    }
+
+    // const [currencyValueFrom, setCurrencyValueFrom] = useState(0);
+    // const [currencyValueTo, setCurrencyValueTo] = useState(0);
+
+    const [currencyItemFrom, setCurrencyItemFrom] = useState('USD');
+    const [currencyItemTo, setCurrencyItemTo] = useState('RUB');
+
+
+    const getCurrencyRatesFromApi = async () => {
+        const result = await getCurrencyRates(baseCurrency);
+        setRates(result);
+    };
+
+    // const changeInputVal = (val1: ChangeEvent<HTMLInputElement>) => {
+    //     setValue1(Number(val1.target.value))
+    // }
+
+    const changeCurrencyItemFrom = (val: any) => {
+        setCurrencyItemFrom(val.target.outerText)
+    };
+
+    // const changeCurrencyItemTo = (val: any) => {
+    //     setCurrencyItemTo(val.target.outerText)
+    // };
+
+    const changeCurrencyItemTo = useCallback((val: any) => {
+        setCurrencyItemTo(val.target.outerText)
+    }, [currencyItemTo])
+
+    const handleChangeCurrencies = () => {
+        if(currencyItemFrom !== currencyItemTo) {
+            setCurrencyItemFrom(currencyItemTo)
+            setCurrencyItemTo(currencyItemFrom)
+        }
+    };
 
     return (
         <ExchangePairsContainer>
@@ -36,34 +68,41 @@ const ExchangePairsComponent = () => {
 
                 <ExchangePairsInputsBlock>
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={value1} onChange={changeInputVal}/>
-                        <ExchangePairsSelect>
-                            {Object.entries(currenciesList).map(el => {
-                                return(
-                                    <MenuItem value={el[1].code}>
-                                        {el[1].code}
+                        {/*<ExchangePairsInput value={currencyValueFrom} onChange={changeInputVal} />*/}
+
+                        <ExchangePairsSelect value={currencyItemFrom} onClick={changeCurrencyItemFrom}>
+
+                            {currenciesList.map(el => {
+                                return (
+                                    <MenuItem
+                                        key={el.code}
+                                        value={el.code}
+                                        >
+                                        {el.code}
                                     </MenuItem>
-                                )
+                                );
                             })}
                         </ExchangePairsSelect>
                     </ExchangePairsFromTo>
 
-                    <ExchangePairsSwiperButton>
-                        <SyncAltIcon/>
+                    <ExchangePairsSwiperButton onClick={handleChangeCurrencies}>
+                        <SyncAltIcon />
                     </ExchangePairsSwiperButton>
 
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={value2}/>
-                        <ExchangePairsSelect>
-                            {Object.entries(currenciesList).map(el => {
-                                return(
+                        {/*<ExchangePairsInput value={currencyValueTo} />*/}
+
+                        <ExchangePairsSelect value={currencyItemTo} onClick={changeCurrencyItemTo}>
+
+                            {currenciesList.map(el => {
+                                return (
                                     <MenuItem
-                                        value={el[1].code}
-                                        key={el[1].code}
+                                        value={el.code}
+                                        key={el.code}
                                     >
-                                        {el[1].code}
+                                        {el.code}
                                     </MenuItem>
-                                )
+                                );
                             })}
                         </ExchangePairsSelect>
                     </ExchangePairsFromTo>
