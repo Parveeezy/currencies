@@ -24,7 +24,7 @@ const RatesListComponent = () => {
     const getCurrencyRatesFromApi = async () => {
         const result = await getCurrencyRates(baseCurrency);
         setRates(result);
-    }
+    };
 
     useEffect(() => {
         setTimeout(() => {
@@ -34,7 +34,7 @@ const RatesListComponent = () => {
 
     const handleUpdateExchanges = async () => {
         getCurrencyRatesFromApi()
-    }
+    };
 
 
     return (

@@ -12,6 +12,7 @@ import {
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import { MenuItem } from '@mui/material';
 import { useBaseCurrency } from '../../providers/CurrenciesProvider';
+import { getCurrencyRates } from '../../api';
 
 
 const ExchangePairsComponent = () => {
@@ -20,26 +21,45 @@ const ExchangePairsComponent = () => {
 
     const { currenciesList, baseCurrency } = useBaseCurrency();
 
-    const [currencyValueFrom, setCurrencyValueFrom] = useState(0);
-    const [currencyValueTo, setCurrencyValueTo] = useState(0);
+    const [rates, setRates] = useState({});
 
-    const [currencyItemFrom, setCurrencyItemFrom] = useState('USD');
-    const [currencyItemTo, setCurrencyItemTo] = useState('RUB');
+
+    const getCurrencyRatesFromApi = async () => {
+        const result = await getCurrencyRates(baseCurrency);
+        setRates(result);
+    };
+
+    useEffect(() => {
+        getCurrencyRatesFromApi()
+    }, [baseCurrency])
+
+    const [currencyValueFrom, setCurrencyValueFrom] = useState(currenciesList[rates]);
+    const [currencyValueTo, setCurrencyValueTo] = useState(rates);
+
+    const [currencyItemFrom, setCurrencyItemFrom] = useState(baseCurrency);
+    const [currencyItemTo, setCurrencyItemTo] = useState(baseCurrency);
 
 
     const changeValueFrom = (event: ChangeEvent<HTMLInputElement>) => {
-        setCurrencyValueFrom(Number(event.target.value) * currencyValueTo)
+        setCurrencyValueFrom(Number(event.target.value))
+        setCurrencyValueTo(Number(event.target.value) * 2)
     };
 
     const changeValueTo = (event: ChangeEvent<HTMLInputElement>) => {
         setCurrencyValueTo(Number(event.target.value))
+
+        if(currencyValueTo < 0 || isNaN(currencyValueTo)) {
+            setCurrencyValueTo(0)
+        }
     };
 
     const changeCurrencyItemFrom = (event: any) => {
+        setRates(event.target.outerText)
         setCurrencyItemFrom(event.target.outerText)
     };
 
     const changeCurrencyItemTo = (event: any) => {
+        setRates(event.target.outerText)
         setCurrencyItemTo(event.target.outerText)
     };
 
@@ -49,10 +69,6 @@ const ExchangePairsComponent = () => {
             setCurrencyItemTo(currencyItemFrom)
         }
     };
-
-    useEffect(() => {
-        setCurrencyValueFrom()
-    }, [changeValueFrom, changeValueTo]);
 
     return (
         <ExchangePairsContainer>
