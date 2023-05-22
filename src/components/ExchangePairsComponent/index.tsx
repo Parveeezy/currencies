@@ -19,7 +19,8 @@ const ExchangePairsComponent = () => {
 
     let date = new Date();
 
-    const { currenciesList, baseCurrency } = useBaseCurrency();
+    const { currenciesList, baseCurrency } = use
+    BaseCurrency();
 
     const [rates, setRates] = useState({});
 
@@ -30,43 +31,51 @@ const ExchangePairsComponent = () => {
     };
 
     useEffect(() => {
-        getCurrencyRatesFromApi()
-    }, [baseCurrency])
+        getCurrencyRatesFromApi();
+    }, [baseCurrency]);
 
-    const [currencyValueFrom, setCurrencyValueFrom] = useState(currenciesList[rates]);
-    const [currencyValueTo, setCurrencyValueTo] = useState(rates);
+    console.log(rates);
+
+    const [currencyValueFrom, setCurrencyValueFrom] = useState(0);
+    const [currencyValueTo, setCurrencyValueTo] = useState(0);
 
     const [currencyItemFrom, setCurrencyItemFrom] = useState(baseCurrency);
     const [currencyItemTo, setCurrencyItemTo] = useState(baseCurrency);
 
-
+//Ввод валюты
     const changeValueFrom = (event: ChangeEvent<HTMLInputElement>) => {
-        setCurrencyValueFrom(Number(event.target.value))
-        setCurrencyValueTo(Number(event.target.value) * 2)
-    };
+        setCurrencyValueFrom(Number(event.target.value));
+        setCurrencyValueTo(Number(event.target.value) * 2);
 
-    const changeValueTo = (event: ChangeEvent<HTMLInputElement>) => {
-        setCurrencyValueTo(Number(event.target.value))
-
-        if(currencyValueTo < 0 || isNaN(currencyValueTo)) {
-            setCurrencyValueTo(0)
+        if (currencyValueFrom < 0 || isNaN(currencyValueFrom)) {
+            setCurrencyValueFrom(0);
         }
     };
 
+    const changeValueTo = (event: ChangeEvent<HTMLInputElement>) => {
+        setCurrencyValueTo(Number(event.target.value));
+
+        if (currencyValueTo < 0 || isNaN(currencyValueTo)) {
+            setCurrencyValueTo(0);
+        }
+    };
+
+//Выбор валюты
     const changeCurrencyItemFrom = (event: any) => {
-        setRates(event.target.outerText)
-        setCurrencyItemFrom(event.target.outerText)
+        setRates(event.target.outerText);
+        setCurrencyItemFrom(event.target.outerText);
     };
 
     const changeCurrencyItemTo = (event: any) => {
-        setRates(event.target.outerText)
-        setCurrencyItemTo(event.target.outerText)
+        setRates(event.target.outerText);
+        setCurrencyItemTo(event.target.outerText);
     };
 
+//Переключатель валют
     const handleChangeCurrencies = () => {
-        if(currencyItemFrom !== currencyItemTo) {
-            setCurrencyItemFrom(currencyItemTo)
-            setCurrencyItemTo(currencyItemFrom)
+        if (currencyItemFrom !== currencyItemTo) {
+            setCurrencyItemFrom(currencyItemTo);
+            setCurrencyItemTo(currencyItemFrom);
         }
     };
 
@@ -88,7 +97,7 @@ const ExchangePairsComponent = () => {
                                     <MenuItem
                                         key={el.code}
                                         value={el.code}
-                                        >
+                                    >
                                         {el.code}
                                     </MenuItem>
                                 );
@@ -101,7 +110,7 @@ const ExchangePairsComponent = () => {
                     </ExchangePairsSwiperButton>
 
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={currencyValueTo} onChange={changeValueTo}/>
+                        <ExchangePairsInput value={currencyValueTo} onChange={changeValueTo} />
 
                         <ExchangePairsSelect value={currencyItemTo} onClick={changeCurrencyItemTo}>
 
