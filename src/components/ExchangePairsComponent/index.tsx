@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, MouseEventHandler, useEffect, useState } from 'react';
 import {
     ExchangePairsBlock,
     ExchangePairsContainer,
@@ -12,72 +12,45 @@ import {
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import { MenuItem } from '@mui/material';
 import { useBaseCurrency } from '../../providers/CurrenciesProvider';
-import { getCurrencyRates } from '../../api';
+import { Currencies, getCurrencyRates } from '../../api';
 
 
 const ExchangePairsComponent = () => {
 
     let date = new Date();
 
-    const { currenciesList, baseCurrency } = use
-    BaseCurrency();
+    const { currenciesList, baseCurrency } = useBaseCurrency();
 
     const [rates, setRates] = useState({});
 
+    const mappedCurrenciesList = currenciesList.map(el => el.code)
+
+
+    const [currencyOptionsFirst, setCurrencyOptionsFirst] = useState<string>('USD');
+    const [currencyOptionsSecond, setCurrencyOptionsSecond] = useState<string>('RUB');
+    const [fromCurrency, setFromCurrency] = useState();
+    const [toCurrency, setToCurrency] = useState();
 
     const getCurrencyRatesFromApi = async () => {
         const result = await getCurrencyRates(baseCurrency);
         setRates(result);
     };
 
+
     useEffect(() => {
         getCurrencyRatesFromApi();
-    }, [baseCurrency]);
+        setFromCurrency(rates[currencyOptionsFirst])
+        setToCurrency(rates[currencyOptionsSecond])
+    }, [baseCurrency, rates]);
 
-    console.log(rates);
-
-    const [currencyValueFrom, setCurrencyValueFrom] = useState(0);
-    const [currencyValueTo, setCurrencyValueTo] = useState(0);
-
-    const [currencyItemFrom, setCurrencyItemFrom] = useState(baseCurrency);
-    const [currencyItemTo, setCurrencyItemTo] = useState(baseCurrency);
-
-//Ввод валюты
-    const changeValueFrom = (event: ChangeEvent<HTMLInputElement>) => {
-        setCurrencyValueFrom(Number(event.target.value));
-        setCurrencyValueTo(Number(event.target.value) * 2);
-
-        if (currencyValueFrom < 0 || isNaN(currencyValueFrom)) {
-            setCurrencyValueFrom(0);
-        }
+    const changeFirstCurrencyOptions = (event: any) => {
+        setCurrencyOptionsFirst(event.target.innerText);
     };
 
-    const changeValueTo = (event: ChangeEvent<HTMLInputElement>) => {
-        setCurrencyValueTo(Number(event.target.value));
-
-        if (currencyValueTo < 0 || isNaN(currencyValueTo)) {
-            setCurrencyValueTo(0);
-        }
+    const changeSecondCurrencyOptions = (event: any) => {
+        setCurrencyOptionsSecond(event.target.innerText);
     };
 
-//Выбор валюты
-    const changeCurrencyItemFrom = (event: any) => {
-        setRates(event.target.outerText);
-        setCurrencyItemFrom(event.target.outerText);
-    };
-
-    const changeCurrencyItemTo = (event: any) => {
-        setRates(event.target.outerText);
-        setCurrencyItemTo(event.target.outerText);
-    };
-
-//Переключатель валют
-    const handleChangeCurrencies = () => {
-        if (currencyItemFrom !== currencyItemTo) {
-            setCurrencyItemFrom(currencyItemTo);
-            setCurrencyItemTo(currencyItemFrom);
-        }
-    };
 
     return (
         <ExchangePairsContainer>
@@ -88,10 +61,9 @@ const ExchangePairsComponent = () => {
 
                 <ExchangePairsInputsBlock>
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={currencyValueFrom} onChange={changeValueFrom} />
+                        <ExchangePairsInput value={Math.floor(fromCurrency * 100) / 100} />
 
-                        <ExchangePairsSelect value={currencyItemFrom} onClick={changeCurrencyItemFrom}>
-
+                        <ExchangePairsSelect value={currencyOptionsFirst} onClick={changeFirstCurrencyOptions}>
                             {currenciesList.map(el => {
                                 return (
                                     <MenuItem
@@ -105,15 +77,14 @@ const ExchangePairsComponent = () => {
                         </ExchangePairsSelect>
                     </ExchangePairsFromTo>
 
-                    <ExchangePairsSwiperButton onClick={handleChangeCurrencies}>
+                    <ExchangePairsSwiperButton>
                         <SyncAltIcon />
                     </ExchangePairsSwiperButton>
 
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={currencyValueTo} onChange={changeValueTo} />
+                        <ExchangePairsInput value={Math.floor(toCurrency * 100) / 100} />
 
-                        <ExchangePairsSelect value={currencyItemTo} onClick={changeCurrencyItemTo}>
-
+                        <ExchangePairsSelect value={currencyOptionsSecond} onClick={changeSecondCurrencyOptions}>
                             {currenciesList.map(el => {
                                 return (
                                     <MenuItem
