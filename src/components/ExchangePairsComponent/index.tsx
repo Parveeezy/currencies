@@ -5,14 +5,15 @@ import {
     ExchangePairsFromTo,
     ExchangePairsInput,
     ExchangePairsInputsBlock,
-    ExchangePairsSelect,
-    ExchangePairsSwiperButton,
+    ExchangePairsSelect, ExchangePairsSwiperButton,
     ExchangePairsTitle,
+    HomeButton,
 } from './components';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
-import { MenuItem } from '@mui/material';
 import { useBaseCurrency } from '../../providers/CurrenciesProvider';
 import { Currencies, getCurrencyRates } from '../../api';
+import { Link } from 'react-router-dom';
+import { MenuItem } from '@mui/material';
 
 
 const ExchangePairsComponent = () => {
@@ -21,27 +22,23 @@ const ExchangePairsComponent = () => {
 
     const { currenciesList, baseCurrency } = useBaseCurrency();
 
-    const [rates, setRates] = useState({});
+    const [rates, setRates] = useState<typeof values>({});
 
-    const mappedCurrenciesList = currenciesList.map(el => el.code)
+    let values: any = (Object.keys(rates) as Array<keyof typeof rates>)
 
-
-    const [currencyOptionsFirst, setCurrencyOptionsFirst] = useState<string>('USD');
+    const [currencyOptionsFirst, setCurrencyOptionsFirst] = useState<string>(baseCurrency);
     const [currencyOptionsSecond, setCurrencyOptionsSecond] = useState<string>('RUB');
-    const [fromCurrency, setFromCurrency] = useState();
-    const [toCurrency, setToCurrency] = useState();
+    const [fromCurrency, setFromCurrency] = useState<number>(0);
+    const [toCurrency, setToCurrency] = useState<number>(0);
 
     const getCurrencyRatesFromApi = async () => {
         const result = await getCurrencyRates(baseCurrency);
         setRates(result);
     };
 
-
     useEffect(() => {
         getCurrencyRatesFromApi();
-        setFromCurrency(rates[currencyOptionsFirst])
-        setToCurrency(rates[currencyOptionsSecond])
-    }, [baseCurrency, rates]);
+    }, [baseCurrency]);
 
     const changeFirstCurrencyOptions = (event: any) => {
         setCurrencyOptionsFirst(event.target.innerText);
@@ -49,6 +46,25 @@ const ExchangePairsComponent = () => {
 
     const changeSecondCurrencyOptions = (event: any) => {
         setCurrencyOptionsSecond(event.target.innerText);
+    };
+
+    const inputValFirst = (e: ChangeEvent<HTMLInputElement>) => {
+        setFromCurrency(Number(e.target.value))
+        setToCurrency(Number(e.target.value) * (rates[currencyOptionsSecond]))
+    };
+
+    const inputValSecond = (e: ChangeEvent<HTMLInputElement>) => {
+        setToCurrency(Number(e.target.value))
+        setFromCurrency(Number(e.target.value) * (rates[currencyOptionsSecond]))
+    };
+
+    const handleSwipeCurrencies = () => {
+        if (currencyOptionsFirst !== currencyOptionsSecond) {
+            setCurrencyOptionsFirst(currencyOptionsSecond);
+            setCurrencyOptionsSecond(currencyOptionsFirst);
+            setFromCurrency(toCurrency)
+            setToCurrency(fromCurrency)
+        }
     };
 
 
@@ -61,7 +77,7 @@ const ExchangePairsComponent = () => {
 
                 <ExchangePairsInputsBlock>
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={Math.floor(fromCurrency * 100) / 100} />
+                        <ExchangePairsInput value={Math.floor(fromCurrency * 100) / 100}  onChange={inputValFirst}/>
 
                         <ExchangePairsSelect value={currencyOptionsFirst} onClick={changeFirstCurrencyOptions}>
                             {currenciesList.map(el => {
@@ -77,12 +93,12 @@ const ExchangePairsComponent = () => {
                         </ExchangePairsSelect>
                     </ExchangePairsFromTo>
 
-                    <ExchangePairsSwiperButton>
+                    <ExchangePairsSwiperButton onClick={handleSwipeCurrencies}>
                         <SyncAltIcon />
                     </ExchangePairsSwiperButton>
 
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={Math.floor(toCurrency * 100) / 100} />
+                        <ExchangePairsInput value={Math.floor(toCurrency * 100) / 100} onChange={inputValSecond}/>
 
                         <ExchangePairsSelect value={currencyOptionsSecond} onClick={changeSecondCurrencyOptions}>
                             {currenciesList.map(el => {
@@ -101,6 +117,12 @@ const ExchangePairsComponent = () => {
 
 
             </ExchangePairsBlock>
+
+            <Link to={'/'}>
+                <HomeButton variant={'contained'}>
+                    Home
+                </HomeButton>
+            </Link>
         </ExchangePairsContainer>
     );
 };

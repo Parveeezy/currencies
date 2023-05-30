@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import {Button, Container, Select, TextField} from "@mui/material";
+import styled from 'styled-components';
+import { Button, Container, Select, TextField } from '@mui/material';
 
 export const ExchangePairsContainer = styled(Container)(() => ({
     textAlign: 'center',
@@ -9,7 +9,7 @@ export const ExchangePairsContainer = styled(Container)(() => ({
         borderRadius: 4,
         padding: 20,
         marginTop: 20,
-    }
+    },
 }));
 
 export const ExchangePairsBlock = styled('div')(() => ({
@@ -18,20 +18,18 @@ export const ExchangePairsBlock = styled('div')(() => ({
     height: '50%',
     border: '1px',
     borderRadius: 4,
-    boxShadow: '1px 1px 15px gray'
+    boxShadow: '1px 1px 15px gray',
 }));
 
-export const ExchangePairsTitle = styled('h2')(() => ({
+export const ExchangePairsTitle = styled('h2')(() => ({}));
 
-}));
-
-export const ExchangePairsInputsBlock = styled('p')(() => ({
+export const ExchangePairsInputsBlock = styled('div')(() => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
 }));
 
-export const ExchangePairsFromTo = styled("div")(() => ({
+export const ExchangePairsFromTo = styled('div')(() => ({
     marginRight: 10,
     marginLeft: 10,
 }));
@@ -40,7 +38,7 @@ export const ExchangePairsInput = styled(TextField)(() => ({
     width: 150,
     '& fieldset': {
         borderRadius: '4px 0px 0px 4px',
-    }
+    },
 }));
 
 export const ExchangePairsSelect = styled(Select)(() => ({
@@ -50,6 +48,15 @@ export const ExchangePairsSelect = styled(Select)(() => ({
     },
 }));
 
-export const ExchangePairsSwiperButton = styled(Button)(() => ({
+export const ExchangePairsSwiperButton = styled(Button)(() => ({}));
 
+
+export const HomeButton = styled(Button)(() => ({
+    '&.MuiButtonBase-root': {
+        marginTop: 25,
+    },
+    '& a': {
+        color: '#fff',
+        textDecoration: 'none'
+    }
 }));

@@ -46,7 +46,8 @@ export const ExchangeValueAndButtonBlock = styled('div')(() => ({
 }))
 
 export const ExchangeValue = styled('h2')(() => ({
-    color: '#909090'
+    color: '#909090',
+    marginRight: 20
 }))
 
 export const ExchangeUpdateButton = styled(Button)(() => ({

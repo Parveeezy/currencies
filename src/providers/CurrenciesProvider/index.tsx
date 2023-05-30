@@ -8,7 +8,7 @@ interface BaseCurrencyInterface {
 };
 
 const BaseCurrencyContext = createContext<BaseCurrencyInterface>({
-    baseCurrency: "RUB",
+    baseCurrency: "USD",
     currenciesList: [],
     changeBaseCurrency: () => {},
 });
@@ -17,7 +17,7 @@ const lsBaseCurrency = localStorage.getItem("baseCurrency");
 
 export const BaseCurrencyProvider = ({ children }: any) => {
     const [currenciesList, setCurrenciesList] = useState<Currencies[]>([]);
-    const [baseCurrency, setBaseCurrency] = useState<string>(lsBaseCurrency || "RUB");
+    const [baseCurrency, setBaseCurrency] = useState<string>(lsBaseCurrency || "USD");
     const [isLoading, setIsLoading] = useState(true);
 
     const getCurrenciesFromApi = async () => {
