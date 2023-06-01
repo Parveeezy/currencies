@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {useBaseCurrency} from "../../../providers/CurrenciesProvider";
-import {getCurrencyRates} from "../../../api";
+import { useBaseCurrency } from '../../../providers/CurrenciesProvider';
+import { getCurrencyRates } from '../../../api';
 import {
     ExchangeDescriptionBlock,
     ExchangeList,
@@ -11,13 +11,13 @@ import {
     ExchangeValue,
     ExchangeValueAndButtonBlock,
     ExchangeValuesDescription,
-} from "./components";
-import {Skeleton} from "@mui/material";
+} from './components';
+import { Skeleton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import Timer from "../../Timer";
+import Timer from '../../Timer';
 
 const RatesListComponent = () => {
-    const {baseCurrency, currenciesList} = useBaseCurrency();
+    const { baseCurrency, currenciesList } = useBaseCurrency();
     const [rates, setRates] = useState({});
 
     const getCurrencyRatesFromApi = useCallback(async () => {
@@ -30,7 +30,7 @@ const RatesListComponent = () => {
     }, [baseCurrency]);
 
     const handleUpdateExchanges = async () => {
-        getCurrencyRatesFromApi()
+        getCurrencyRatesFromApi();
     };
 
     return (
@@ -48,11 +48,11 @@ const RatesListComponent = () => {
                         </ExchangeValue>
                     )
                 }
-                <Timer getCurrency={getCurrencyRatesFromApi}/>
+                <Timer getCurrency={getCurrencyRatesFromApi} />
                 <ExchangeUpdateButton
                     onClick={handleUpdateExchanges}
                 >
-                    <RefreshIcon/>
+                    <RefreshIcon />
                 </ExchangeUpdateButton>
             </ExchangeValueAndButtonBlock>
 
@@ -73,13 +73,22 @@ const RatesListComponent = () => {
                                         {current.name}: &nbsp;
                                     </ExchangeListItemName>
                                     <ExchangeListItemValue>
-                                        {Math.floor(rate[1] * 100) / 100} {rate[0]}
+                                        {Math.floor(Number(rate[1]) * 100) / 100} {rate[0]}
                                     </ExchangeListItemValue>
                                 </ExchangeList>
                             );
-                        }
+                        },
                     )
-                ) : (<><ExchangeList><Skeleton animation="wave"/></ExchangeList><Skeleton animation="wave"/><Skeleton animation="wave"/></>)
+                ) : (
+                    <>
+                        <Skeleton animation='wave' />
+                        <Skeleton animation='wave' />
+                        <Skeleton animation='wave' />
+                        <Skeleton animation='wave' />
+                        <Skeleton animation='wave' />
+                        <Skeleton animation='wave' />
+                        <Skeleton animation='wave' />
+                    </>)
             }
         </ExchangeListContainer>
     );
