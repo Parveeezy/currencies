@@ -1,28 +1,26 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface TimerType {
     getCurrency: () => void
 }
 
-const Timer = (props: TimerType) => {
-
+const Timer = ({ getCurrency }: TimerType) => {
     const minutes: string = '00';
-    const [seconds, setSeconds] = useState<number>(60);
-
-    const updateTimer = () => {
-        setTimeout(() => {
-            setSeconds(seconds - 1)
-            if (seconds === 0) {
-                props.getCurrency()
-                setSeconds(60)
-            }
-        }, 1000);
-    }
+    const [seconds, setSeconds] = useState<number>(59);
 
     useEffect(() => {
-        updateTimer()
-    }, [seconds]);
+        if (seconds === 0) {
+            getCurrency();
+        }
+    }, [seconds, getCurrency]);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setSeconds(prev => prev === 0 ? 59 : prev - 1);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div>

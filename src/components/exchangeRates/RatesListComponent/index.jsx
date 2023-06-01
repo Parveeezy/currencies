@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {useBaseCurrency} from "../../../providers/CurrenciesProvider";
 import {getCurrencyRates} from "../../../api";
 import {
@@ -20,22 +20,18 @@ const RatesListComponent = () => {
     const {baseCurrency, currenciesList} = useBaseCurrency();
     const [rates, setRates] = useState({});
 
-
-    const getCurrencyRatesFromApi = async () => {
+    const getCurrencyRatesFromApi = useCallback(async () => {
         const result = await getCurrencyRates(baseCurrency);
         setRates(result);
-    };
+    }, [baseCurrency]);
 
     useEffect(() => {
-        setTimeout(() => {
-            getCurrencyRatesFromApi();
-        }, 1500)
+        getCurrencyRatesFromApi();
     }, [baseCurrency]);
 
     const handleUpdateExchanges = async () => {
         getCurrencyRatesFromApi()
     };
-
 
     return (
         <ExchangeListContainer>
@@ -83,7 +79,7 @@ const RatesListComponent = () => {
                             );
                         }
                     )
-                ) : <Skeleton animation="wave"/>
+                ) : (<><ExchangeList><Skeleton animation="wave"/></ExchangeList><Skeleton animation="wave"/><Skeleton animation="wave"/></>)
             }
         </ExchangeListContainer>
     );
