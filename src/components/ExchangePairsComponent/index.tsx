@@ -1,85 +1,79 @@
-import React, { ChangeEvent, MouseEventHandler, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import { Link } from 'react-router-dom';
+import { CircularProgress, MenuItem } from '@mui/material';
+
 import {
     ExchangePairsBlock,
     ExchangePairsContainer,
     ExchangePairsFromTo,
     ExchangePairsInput,
     ExchangePairsInputsBlock,
-    ExchangePairsSelect, ExchangePairsSwiperButton,
+    ExchangePairsSelect,
+    ExchangePairsSwiperButton,
     ExchangePairsTitle,
     HomeButton,
 } from './components';
-import SyncAltIcon from '@mui/icons-material/SyncAlt';
-import { useBaseCurrency } from '../../providers/CurrenciesProvider';
-import { Currencies, getCurrencyRates } from '../../api';
-import { Link } from 'react-router-dom';
-import { MenuItem } from '@mui/material';
 
+import { useBaseCurrency } from '../../providers/CurrenciesProvider';
+
+import { getCurrencyRates } from '../../api';
+
+import moment from 'moment';
 
 const ExchangePairsComponent = () => {
-
-    let date = new Date();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const { currenciesList, baseCurrency } = useBaseCurrency();
 
     const [rates, setRates] = useState<typeof values>({});
 
-    let values: any = (Object.keys(rates) as Array<keyof typeof rates>)
+    let values: any = (Object.keys(rates) as Array<keyof typeof rates>);
 
-    const [currencyOptionsFirst, setCurrencyOptionsFirst] = useState<string>(baseCurrency);
-    const [currencyOptionsSecond, setCurrencyOptionsSecond] = useState<string>('RUB');
-    const [fromCurrency, setFromCurrency] = useState<number>(0);
-    const [toCurrency, setToCurrency] = useState<number>(0);
+    const [currencies, setCurrencies] = useState({ from: baseCurrency, to: 'RUB' });
+    const [fromCurrency, setFromCurrency] = useState<number>(1);
 
-    const getCurrencyRatesFromApi = async () => {
-        const result = await getCurrencyRates(baseCurrency);
+    const getCurrencyRatesFromApi = async (currency: string) => {
+        setIsLoading(true);
+        const result = await getCurrencyRates(currency);
         setRates(result);
+        setIsLoading(false);
     };
 
     useEffect(() => {
-        getCurrencyRatesFromApi();
-    }, [baseCurrency]);
+        getCurrencyRatesFromApi(currencies.from);
+    }, []);
 
-    const changeFirstCurrencyOptions = (event: any) => {
-        setCurrencyOptionsFirst(event.target.innerText);
+    const changeFirstCurrencyOptions = async (event: any) => {
+        setCurrencies(prev => ({ ...prev, from: event.target.value }));
+        await getCurrencyRatesFromApi(event.target.value);
     };
 
     const changeSecondCurrencyOptions = (event: any) => {
-        setCurrencyOptionsSecond(event.target.innerText);
+        setCurrencies(prev => ({ ...prev, to: event.target.value }));
     };
 
     const inputValFirst = (e: ChangeEvent<HTMLInputElement>) => {
-        setFromCurrency(Number(e.target.value))
-        setToCurrency(Number(e.target.value) * (rates[currencyOptionsSecond]))
+        setFromCurrency(Number(e.target.value));
     };
 
-    const inputValSecond = (e: ChangeEvent<HTMLInputElement>) => {
-        setToCurrency(Number(e.target.value))
-        setFromCurrency(Number(e.target.value) * (rates[currencyOptionsSecond]))
+    const handleSwipeCurrencies = async () => {
+        await getCurrencyRatesFromApi(currencies.to);
+        setCurrencies(prev => ({ from: prev.to, to: prev.from }));
     };
-
-    const handleSwipeCurrencies = () => {
-        if (currencyOptionsFirst !== currencyOptionsSecond) {
-            setCurrencyOptionsFirst(currencyOptionsSecond);
-            setCurrencyOptionsSecond(currencyOptionsFirst);
-            setFromCurrency(toCurrency)
-            setToCurrency(fromCurrency)
-        }
-    };
-
 
     return (
         <ExchangePairsContainer>
             <ExchangePairsBlock>
                 <ExchangePairsTitle>
-                    CONVERTER AT THE RATE as of {date.getDate()}.{date.getMonth() + 1}.{date.getFullYear()}
+                    CONVERTER AT THE RATE as of {moment().format("DD.MM.YYYY")}
                 </ExchangePairsTitle>
 
                 <ExchangePairsInputsBlock>
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={Math.floor(fromCurrency * 100) / 100}  onChange={inputValFirst}/>
+                        <ExchangePairsInput value={Math.floor(fromCurrency * 100) / 100} onChange={inputValFirst} />
 
-                        <ExchangePairsSelect value={currencyOptionsFirst} onClick={changeFirstCurrencyOptions}>
+                        <ExchangePairsSelect value={currencies.from} onChange={changeFirstCurrencyOptions}>
                             {currenciesList.map(el => {
                                 return (
                                     <MenuItem
@@ -94,13 +88,13 @@ const ExchangePairsComponent = () => {
                     </ExchangePairsFromTo>
 
                     <ExchangePairsSwiperButton onClick={handleSwipeCurrencies}>
-                        <SyncAltIcon />
+                        {isLoading ? <CircularProgress size={22} /> : <SyncAltIcon />}
                     </ExchangePairsSwiperButton>
 
                     <ExchangePairsFromTo>
-                        <ExchangePairsInput value={Math.floor(toCurrency * 100) / 100} onChange={inputValSecond}/>
+                        <ExchangePairsInput value={Math.floor((Number(fromCurrency) * (rates[currencies.to] || 0)) * 100) / 100} />
 
-                        <ExchangePairsSelect value={currencyOptionsSecond} onClick={changeSecondCurrencyOptions}>
+                        <ExchangePairsSelect value={currencies.to} onChange={changeSecondCurrencyOptions}>
                             {currenciesList.map(el => {
                                 return (
                                     <MenuItem
